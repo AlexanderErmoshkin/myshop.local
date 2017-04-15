@@ -2,6 +2,8 @@
 
 include_once '../models/CategoriesModel.php';
 include_once '../models/UserModel.php';
+include_once '../models/PurchaseModel.php';
+include_once '../models/OrdersModel.php';
 
 function registerAction() {
     $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
@@ -90,10 +92,16 @@ function indexAction($smarty) {
     if (! isset($_SESSION['user'])) {
         redirect('/');
     }
+    //список категорий для меню
     $rsCategories = getAllMainCatsWithChildren();
+    
+    //список заказов пользователя
+    $rsUserOrders = getCurUserOrders();
     
     $smarty->assign('PageTitle', 'Страница пользователя');
     $smarty->assign('rsCategories', $rsCategories);
+    
+    $smarty->assign('rsUserOrders', $rsUserOrders);
     
     loadTemplate($smarty, 'header');
     loadTemplate($smarty, 'user');

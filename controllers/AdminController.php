@@ -38,3 +38,75 @@ function addnewcatAction() {
     echo json_encode($resData);
     return;
 }
+
+/**
+ * Страница управления категориями
+ * @param object $smarty
+ */
+function categoryAction($smarty) {
+    $rsCategories = getAllCategories();
+    $rsMainCategories = getAllMainCategories();
+
+    $smarty->assign('rsCategories', $rsCategories);
+    $smarty->assign('rsMainCategories', $rsMainCategories);
+    $smarty->assign('pageTitle', 'Управление сайтом');
+    
+    loadTemplate($smarty, 'adminHeader');
+    loadTemplate($smarty, 'adminCategory');
+    loadTemplate($smarty, 'adminFooter');
+}
+
+function updatecategoryAction() {
+    $itemId = $_POST['itemId'];
+    $parentId = $_POST['parentId'];
+    $newName = $_POST['newName'];
+    
+    $res = updateCategoryData($itemId, $parentId, $newName);
+    
+    if ($res) {
+        $resData['success'] = 1;
+        $resData['message'] = 'Категория обновлена';
+    } else {
+        $resData['success'] = 0;
+        $resData['message'] = 'Ошибка изменения данных категории';
+    }
+    
+    echo json_encode($resData);
+    return;
+}
+
+/**
+ * Страница управления товарами
+ * @param object $smarty
+ */
+function productsAction($smarty) {
+    $rsCategories = getAllCategories();
+    $rsProducts = getProducts();
+    
+    $smarty->assign('pageTitle', 'Управление сайтом');
+    $smarty->assign('rsProducts', $rsProducts);
+    $smarty->assign('rsCategories', $rsCategories);
+    
+    loadTemplate($smarty, 'adminHeader');
+    loadTemplate($smarty, 'adminProducts');
+    loadTemplate($smarty, 'adminFooter');
+}
+
+function addproductAction() {
+    $itemName = $_POST['itemName'];
+    $itemPrice = $_POST['itemPrice'];
+    $itemDescr = $_POST['itemDescr'];
+    $itemCatId = $_POST['itemCatId'];
+    
+    $res = insertProduct($itemName, $itemPrice, $itemDescr, $itemCatId);
+    
+    if ($res) {
+        $resData['success'] = 1;
+        $resData['message'] = 'Изменения успешно внесены';
+    } else {
+        $resData['success'] = 0;
+        $resData['message'] = 'Ошибка изменения данных';
+    }
+    echo json_encode($resData);
+    return;
+}

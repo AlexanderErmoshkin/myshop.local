@@ -51,3 +51,29 @@ function getProductsFromArray($itemsId) {
     return createSmartyArray($rs);
 }
 
+/**
+ * получить все продукты
+ */
+function getProducts() {
+    $sql = "SELECT * FROM products ORDER BY category_id";
+    $rs = mysql_query($sql);
+    return createSmartyArray($rs);
+}
+
+/**
+ * Добавление нового товара
+ * @param string $itemName имя товара
+ * @param float $itemPrice цена товара
+ * @param string $itemDescr описание товара
+ * @param integer $itemCat id категория товара
+ * @return boolean результат операции
+ */
+function insertProduct($itemName, $itemPrice, $itemDescr, $itemCat) {
+    $sql = "INSERT INTO products SET
+            `name` = '{$itemName}',
+            `price` = '{$itemPrice}',
+            `description` = '{$itemDescr}',
+            `category_id` = '{$itemCat}'";
+    $rs = mysql_query($sql);
+    return $rs;
+}

@@ -65,3 +65,51 @@ function getOrdersWithProductsByUser($userId) {
     }
     return $smartyRs;
 }
+
+function getOrders() {
+    $sql = "SELECT o.*, u.name, u.email, u.phone, u.adress
+            FROM orders as `o`
+            LEFT JOIN users AS `u` ON o.user_id = u.id
+            ORDER BY id DESC";
+    
+    $rs = mysql_query($sql);
+    
+    $smartyRs = array();
+    while($row = mysql_fetch_assoc($rs)) {
+        $rsChildren = getProductsForOrder($row['id']);
+        
+        if ($rsChildren) {
+            $row['children'] = $rsChildren;
+            $smartyRs[] = $row;
+        }
+    }
+    return $smartyRs;
+}
+
+/**
+ * Получить товары заказа
+ * @param integer $orderId ID заказа
+ * @return array массив данных товаров
+ */
+function getProductsForOrder($orderId) {
+    $sql = "SELECT * FROM purchase AS pe
+            LEFT JOIN products AS ps
+            ON pe.product_id = ps.id
+            WHERE (`order_id` = '{$orderId}')";
+    
+    $rs = mysql_query($sql);
+    return createSmartyArray($rs);
+}
+
+function updateOrderStatus($itemId, $status) {
+    $status = intval($status);
+    $sql = "UPDATE orders SET `status` = '{$status}' WHERE id = '{$itemId}'";
+    $rs = mysql_query($sql);
+    return $rs;
+}
+
+function updateOrderDatePayment($itemId, $datePayment) {
+    $sql = "UPDATE orders SET `date_payment` = '{$datePayment}' WHERE id = '{$itemId}'";
+    $rs = mysql_query($sql);
+    return $rs;
+}

@@ -60,10 +60,10 @@ function logoutAction() {
  * retutn json массив данных пользователя
  */
 function loginAction() {
-    $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : null;
+    $email = isset($_POST['email']) ? $_POST['email'] : null;
     $email = trim($email);
     
-    $pwd = isset($_REQUEST['pwd']) ? $_REQUEST['pwd'] : null;
+    $pwd = isset($_POST['pwd']) ? $_POST['pwd'] : null;
     $pwd = trim($pwd);
     
     $userData = loginUser($email, $pwd);

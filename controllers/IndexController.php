@@ -1,11 +1,7 @@
 <?php
-    
+
 include_once '../models/CategoriesModel.php';
 include_once '../models/ProductsModel.php';
-
-function testAction() {
-    echo 'IndexController';
-}
 
 /**
  * Формирование главной страницы сайта

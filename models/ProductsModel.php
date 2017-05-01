@@ -9,8 +9,8 @@ function getLastProducts($limit = null) {
     if($limit) {
         $sql .= " LIMIT " .$limit;
     }
-    
-    $rs = mysql_query($sql);
+    $db = setConnection();
+    $rs = mysqli_query($db, $sql);
     return createSmartyArray($rs);
 }
 
@@ -22,7 +22,8 @@ function getLastProducts($limit = null) {
 function getProductsByCat($itemId) {
     $itemId = intval($itemId);
     $sql = "SELECT * FROM products WHERE category_id = " .$itemId;
-    $rs = mysql_query($sql);
+    $db = setConnection();
+    $rs = mysqli_query($db, $sql);
     return createSmartyArray($rs);
 }
 
@@ -32,10 +33,13 @@ function getProductsByCat($itemId) {
  * @return array массив данных продукта
  */
 function getProductById($itemId) {
+    d($itemId);
     $itemId = intval($itemId);
+    
     $sql = "SELECT * FROM products WHERE id = " .$itemId;
-    $rs = mysql_query($sql);
-    return mysql_fetch_assoc($rs);
+    $db = setConnection();
+    $rs = mysqli_query($db, $sql);
+    return mysqli_fetch_assoc($rs);
 }
 
 /**
@@ -45,9 +49,9 @@ function getProductById($itemId) {
  */
 function getProductsFromArray($itemsId) {
     $strIds = implode($itemsId, ', ');
+    $db = setConnection();
     $sql = "SELECT * FROM products WHERE id in (" .$strIds .")";
-    
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return createSmartyArray($rs);
 }
 
@@ -55,8 +59,9 @@ function getProductsFromArray($itemsId) {
  * получить все продукты
  */
 function getProducts() {
+    $db = setConnection();
     $sql = "SELECT * FROM products ORDER BY category_id";
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return createSmartyArray($rs);
 }
 
@@ -69,17 +74,20 @@ function getProducts() {
  * @return boolean результат операции
  */
 function insertProduct($itemName, $itemPrice, $itemDescr, $itemCat) {
+    $db = setConnection();
     $sql = "INSERT INTO products SET
             `name` = '{$itemName}',
             `price` = '{$itemPrice}',
             `description` = '{$itemDescr}',
             `category_id` = '{$itemCat}'";
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return $rs;
 }
 
 function updateProduct($itemId, $itemName, $itemPrice, $itemStatus, 
         $itemDescr, $itemCat, $newFileName = null) {
+    $db = setConnection();
+    
     $set = array();
     
     if ($itemName) {
@@ -102,7 +110,7 @@ function updateProduct($itemId, $itemName, $itemPrice, $itemStatus,
     }
     $setStr = implode($set, ', ');
     $sql = "UPDATE products SET {$setStr} WHERE id = '{$itemId}'";
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return $rs;
 }
 

@@ -17,7 +17,7 @@ function indexAction($smarty) {
     
     //получить данные продукта
     $rsProduct = getProductById($itemId);
-    
+    d($rsProduct);
     //получить все категории
     $rsCategories = getAllMainCatsWithChildren();
     

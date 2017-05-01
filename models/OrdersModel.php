@@ -10,6 +10,7 @@
  */
 function makeNewOrder($name, $phone, $adress) {
     //> инициализация переменных
+    $db = setConnection();
     $userId = $_SESSION['user']['id'];
     $comment = 'id пользователя: ' . $userId . '<br/>'
             . 'имя: ' . $name . '<br/>'
@@ -24,13 +25,13 @@ function makeNewOrder($name, $phone, $adress) {
             . "VALUES ('" . $userId ."', '" . $dateCreated . "', null, '0', '"
             . $comment . "', '" . $userIp . "')";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     //получить id созданного заказа
     //переделать
     if ($rs) {
         $sql = 'SELECT id FROM orders ORDER BY id DESC LIMIT 1';
-        $rs = mysql_query($sql);
+        $rs = mysqli_query($db, $sql);
         $rs = createSmartyArray($rs);
         
         if (isset($rs[0])) {
@@ -47,15 +48,16 @@ function makeNewOrder($name, $phone, $adress) {
  * @return array массив заказов с привязкой к товарам
  */
 function getOrdersWithProductsByUser($userId) {
+    $db = setConnection();
     $userId = intval($userId);
     $sql = "SELECT * FROM orders
         WHERE `user_id` = '{$userId}'
         ORDER BY id DESC";
         
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     $smartyRs = array();
-    while($row = mysql_fetch_assoc($rs)) {
+    while($row = mysqli_fetch_assoc($rs)) {
         $rsChildren = getPurchaseForOrder($row['id']);
         
         if ($rsChildren) {
@@ -67,15 +69,16 @@ function getOrdersWithProductsByUser($userId) {
 }
 
 function getOrders() {
+    $db = setConnection();
     $sql = "SELECT o.*, u.name, u.email, u.phone, u.adress
             FROM orders as `o`
             LEFT JOIN users AS `u` ON o.user_id = u.id
             ORDER BY id DESC";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     $smartyRs = array();
-    while($row = mysql_fetch_assoc($rs)) {
+    while($row = mysqli_fetch_assoc($rs)) {
         $rsChildren = getProductsForOrder($row['id']);
         
         if ($rsChildren) {
@@ -92,24 +95,27 @@ function getOrders() {
  * @return array массив данных товаров
  */
 function getProductsForOrder($orderId) {
+    $db = setConnection();
     $sql = "SELECT * FROM purchase AS pe
             LEFT JOIN products AS ps
             ON pe.product_id = ps.id
             WHERE (`order_id` = '{$orderId}')";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return createSmartyArray($rs);
 }
 
 function updateOrderStatus($itemId, $status) {
+    $db = setConnection();
     $status = intval($status);
     $sql = "UPDATE orders SET `status` = '{$status}' WHERE id = '{$itemId}'";
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return $rs;
 }
 
 function updateOrderDatePayment($itemId, $datePayment) {
+    $db = setConnection();
     $sql = "UPDATE orders SET `date_payment` = '{$datePayment}' WHERE id = '{$itemId}'";
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     return $rs;
 }

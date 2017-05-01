@@ -10,20 +10,21 @@
  * @return array массив данных нового пользователя
  */
 function registerNewUser($email, $pwdMD5, $name, $phone, $adress){
-    $email = htmlspecialchars(mysql_real_escape_string($email));
-    $name = htmlspecialchars(mysql_real_escape_string($name));
-    $phone = htmlspecialchars(mysql_real_escape_string($phone));
-    $adress = htmlspecialchars(mysql_real_escape_string($adress));
+    $db = setConnection();
+    $email = htmlspecialchars(mysqli_real_escape_string($db, $email));
+    $name = htmlspecialchars(mysqli_real_escape_string($db, $name));
+    $phone = htmlspecialchars(mysqli_real_escape_string($db, $phone));
+    $adress = htmlspecialchars(mysqli_real_escape_string($db, $adress));
     
     $sql = "INSERT INTO users (`email`, `pwd`, `name`, `phone`, `adress`)"
             . "VALUES ('".$email."', '".$pwdMD5."', '".$name."', '".$phone."', '".$adress."')";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     if($rs) {
         $sql = "SELECT * FROM users WHERE (`email` = '".$email."' and `pwd` = '".$pwdMD5."') LIMIT 1";
         
-        $rs = mysql_query($sql);
+        $rs = mysqli_query($db, $sql);
         $rs = createSmartyArray($rs);
         
         if(isset($rs[0])) {
@@ -63,22 +64,24 @@ function checkRegisterParams($email, $pwd1, $pwd2) {
  * @return array строка из таблицы users, лиюо пустой массив
  */
 function checkUserEmail($email) {
-    $email = mysql_real_escape_string($email);
+    $db = setConnection();
+    $email = mysqli_real_escape_string($db, $email);
     $sql = "SELECT id FROM users WHERE email = '".$email."'";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     $rs = createSmartyArray($rs);
     
     return $rs;
 }
 
 function loginUser($email, $pwd) {
-    $email = htmlspecialchars(mysql_real_escape_string($email));
+    $db = setConnection();
+    $email = htmlspecialchars(mysqli_real_escape_string($db, $email));
     $pwd =md5($pwd);
     
     $sql = "SELECT * FROM users WHERE (`email` = '".$email."' and `pwd` = '".$pwd."') LIMIT 1";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     $rs = createSmartyArray($rs);
     
@@ -101,10 +104,12 @@ function loginUser($email, $pwd) {
  * @return boolean TRUE в случае успеха
  */
 function updateUserData($name, $phone, $adress, $pwd1, $pwd2, $curPwd) {
-    $email = htmlspecialchars(mysql_real_escape_string($_SESSION['user']['email']));
-    $name = htmlspecialchars(mysql_real_escape_string($name));
-    $phone = htmlspecialchars(mysql_real_escape_string($phone));
-    $adress = htmlspecialchars(mysql_real_escape_string($adress));
+    $db = setConnection();
+    
+    $email = htmlspecialchars(mysqli_real_escape_string($db, $_SESSION['user']['email']));
+    $name = htmlspecialchars(mysqli_real_escape_string($db, $name));
+    $phone = htmlspecialchars(mysqli_real_escape_string($db, $phone));
+    $adress = htmlspecialchars(mysqli_real_escape_string($db, $adress));
     $pwd1 = trim($pwd1);
     $pwd2 = trim($pwd2);
     
@@ -124,7 +129,7 @@ function updateUserData($name, $phone, $adress, $pwd1, $pwd2, $curPwd) {
             ."`adress` = '".$adress ."' WHERE "
             ."`email` = '".$email ."' AND `pwd` = '".$curPwd ."' LIMIT 1";
     
-    $rs = mysql_query($sql);
+    $rs = mysqli_query($db, $sql);
     
     return $rs;
 }
